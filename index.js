@@ -1,4 +1,5 @@
 var express = require('express');
+var cors = require('cors')
 var app = express();
 const bp = require('body-parser')
 const { db } = require("./util/admin");
@@ -6,7 +7,7 @@ const PORT = process.env.PORT || 5050
 let id = "8Rwvh05zebe9sbBYDKRcFRnZnY83";
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
-
+app.use(cors());
 //income
 app.get('/income', (req, res) => {
     try{
@@ -53,9 +54,10 @@ app.get('/expense', (req, res) => {
     try{
         db.ref(id+'/expense').once('value')
         .then(function(snapshot) {
-            console.log( snapshot.val() )
+            // console.log( snapshot.val() )
             res.send('Request Successful')
         })
+        res.end({})
     }catch(e){
         res.send('Error while making request: ' + e)
     }
@@ -63,7 +65,8 @@ app.get('/expense', (req, res) => {
 
 app.post('/expense', (req, res) => {
     try{
-        db.ref(id+'/expense').push(req.body).then(()=>{
+        console.log(req.body.uid)
+        db.ref(req.body.uid+'/expense').push(req.body).then(()=>{
             res.send('Post Successful')
         })
     }catch(e){
