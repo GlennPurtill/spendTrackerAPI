@@ -1,13 +1,14 @@
 var express = require('express');
 var cors = require('cors')
 var app = express();
-const bp = require('body-parser')
+const bp = require('body-parser');
 const { db } = require("./util/admin");
-const PORT = process.env.PORT || 5050
+const PORT = process.env.PORT || 5050;
 let id = "8Rwvh05zebe9sbBYDKRcFRnZnY83";
-app.use(bp.json())
-app.use(bp.urlencoded({ extended: true }))
+app.use(bp.json());
+app.use(bp.urlencoded({ extended: true }));
 app.use(cors());
+
 //income
 app.get('/income', (req, res) => {
     try{
@@ -54,7 +55,6 @@ app.get('/expense', (req, res) => {
     try{
         db.ref(id+'/expense').once('value')
         .then(function(snapshot) {
-            // console.log( snapshot.val() )
             res.send('Request Successful')
         })
         res.end({})
@@ -65,8 +65,8 @@ app.get('/expense', (req, res) => {
 
 app.post('/expense', (req, res) => {
     try{
-        console.log(req.body.uid)
-        db.ref(req.body.uid+'/expense').push(req.body).then(()=>{
+        // console.log(currentDate())
+        db.ref(req.body.uid+'/expense/'+currentDate()).set(req.body).then(()=>{
             res.send('Post Successful')
         })
     }catch(e){
@@ -92,6 +92,17 @@ app.delete('/expense', (req, res) => {
     }
 })
 
+function currentDate(){
+    const d_t = new Date();
+    let year = d_t.getFullYear();
+    let month = d_t.getMonth()+1;
+    let day = d_t.getDate();
+    let hour = d_t.getHours();
+    let minute = d_t.getMinutes();
+    let seconds = d_t.getSeconds();
+    let miliSecs = d_t.getMilliseconds();
+    return year+""+month+""+day+""+hour+""+minute+""+seconds+""+miliSecs;
+}
 
 app.listen(PORT, function () {
     console.log(`spendTrackerAPI running: ${PORT}!`); 
